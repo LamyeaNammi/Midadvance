@@ -1,5 +1,6 @@
-import { Controller, Post, Body } from '@nestjs/common';
+import { Controller, Post, Body, Module } from '@nestjs/common';
 import { AuthService } from './auth.service';
+import { JwtStrategy } from './jwt.strategy/jwt.strategy';
 
 @Controller('da-auth')
 export class AuthController {
@@ -22,4 +23,5 @@ export class AuthController {
     const user = await this.authService.validateUser(email, password);
     return this.authService.login(user);
   }
+  
 }

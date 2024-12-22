@@ -10,29 +10,32 @@ export class DeliveryAgentService {
     private readonly orderRepository: Repository<Order>,
   ) {}
 
-  async findAllOrderstoMonitor(){
-    const now = new Date();    
-    return await this.orderRepository.find({where: {deliveryDate: MoreThan(now), }})
+  // Find all orders with a delivery date in the future (monitor orders)
+  async findAllOrderstoMonitor() {
+    const now = new Date();
+    return await this.orderRepository.find({
+      where: { deliveryDate: MoreThan(now) },
+    });
   }
 
+  // Find all orders with status 'Pending'
   async findAllPendingOrders() {
     return await this.orderRepository.find({ where: { status: 'Pending' } });
   }
 
+  // Update the status of a specific order by ID
   async updateOrderStatus(id: number, status: string) {
+    // Find the order by ID
     const order = await this.orderRepository.findOneBy({ id });
     if (!order) {
       throw new Error('Order not found');
     }
+
+    // Update the order's status
     order.status = status;
+    const updatedOrder = await this.orderRepository.save(order);
 
-    console.log(order);
-    const updatedOrder= await this.orderRepository.update(id, order);
-
-    if (updatedOrder.affected === 0) {
-      throw new Error('Order not found or update failed');
-    }
-
-    return this.orderRepository.findOneBy({ id });
+    // Return the updated order
+    return updatedOrder;
   }
 }
